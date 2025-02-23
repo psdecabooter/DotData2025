@@ -1,9 +1,12 @@
 from django.shortcuts import render
+from solar.data import SOLAR_COST_PER_M2
+from stats.data import ELECTRICITY_COST
 import json
 
 def compare_elec_trad(request):
+    state = request.session.get('state', 'Wisconsin')
     years = list(range(2024, 2044))  # 20 years
-    base_electricity_cost = 20  # Starting electricity cost per kWh
+    base_electricity_cost = get_state_value(state, ELECTRICITY_COST)*(10500/12)  # Starting electricity cost per kWh
 
     # Compute cumulative electricity costs (each year's cost adds up)
     electricity_costs = []
@@ -25,7 +28,7 @@ def compare_elec_trad(request):
     reduced_solar_cost = original_solar_cost * 0.7  
 
     # Maintenance cost calculation
-    maintenance_cost_per_sqft = 0.50  # $0.50 per sqft per year
+    maintenance_cost_per_sqft =  get_state_value(state, SOLAR_COST_PER_M2) 
     maintenance_costs = [panel_area * maintenance_cost_per_sqft] * len(years)
 
     return render(request, 'chart.html', {
@@ -36,3 +39,6 @@ def compare_elec_trad(request):
         'maintenance_costs': json.dumps(maintenance_costs),  
         'panel_area': panel_area  
     })
+    
+def get_state_value(state_name, dict):
+    return dict.get(state_name, 100)

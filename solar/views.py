@@ -1,9 +1,21 @@
 from django.shortcuts import render
 from solar.utils.api_client import get_ghi
 from rex import Resource
+from django.shortcuts import render, redirect
 
 nsrdb_file = '/nrel/nsrdb/conus/nsrdb_conus_2022.h5'
 
+def solar_estimate(request):
+    if request.method == "POST":
+        request.session['state'] = request.POST.get('state')  # Store in session
+        request.session['latitude'] = request.POST.get('latitude')
+        request.session['longitude'] = request.POST.get('longitude')
+        request.session['efficiency'] = request.POST.get('efficiency')
+        request.session['size'] = request.POST.get('size')
+        
+        return redirect('another_app:use_state')  # Redirect to another app
+
+    return render(request, 'chart.html')
 
 def ghi_view(request):
     results = []
@@ -28,7 +40,14 @@ def ghi_view(request):
             "power_output": round(power_output, 2),
         })
 
+    if request.method == "POST":
+        state = request.POST.get('state', 'Unknown')  # Get from form, default to 'Unknown'
+        request.session['state'] = state
+
     return render(request, "radiation.html", {"results": results})
+
+def new_page(request):
+    return render(request, 'comparison/chart.html')
 
 #we used chatgpt for this file
 
