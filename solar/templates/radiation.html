@@ -64,8 +64,9 @@
         <label for="size">Panel Size (m²):</label>
         <input type="number" step="any" name="size" required>
 
+        <input type="hidden" id="state" name="state" >
+
         <button type="submit">Calculate Power</button>
-        <input type="text" id="state" name="state" >
     </form>
 
     <form action="{% url 'electricity_vs_solar' %}" method="get">
@@ -81,7 +82,6 @@
             <th>Efficiency (%)</th>
             <th>Size (m²)</th>
             <th>Estimated Power Output (W/h)</th>
-            <th>State</th>
         </tr>
         {% for entry in results %}
         <tr>
@@ -91,7 +91,6 @@
             <td>{{ entry.efficiency }}</td>
             <td>{{ entry.size }}</td>
             <td>{{ entry.power_output }}</td>
-            <td>{{ stateName }}</td>
         </tr>
         {% endfor %}
     </table>
@@ -153,7 +152,7 @@
           }
         });
         console.log("Clicked state: " + stateName);
-        document.getElementById('stateName').innerText = stateName;
+        // document.getElementById('stateName').innerText = stateName;
         document.getElementById('state').value = stateName;
       }
     });
