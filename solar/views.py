@@ -13,7 +13,7 @@ def solar_estimate(request):
         request.session['efficiency'] = request.POST.get('efficiency')
         request.session['size'] = request.POST.get('size')
         
-        return redirect('another_app:use_state')  # Redirect to another app
+        return redirect('comparison:use_state')  # Redirect to another app
 
     return render(request, 'chart.html')
 
@@ -43,6 +43,8 @@ def ghi_view(request):
     if request.method == "POST":
         state = request.POST.get('state', 'Unknown')  # Get from form, default to 'Unknown'
         request.session['state'] = state
+        size = float(request.POST.get('size'))
+        request.session['size'] = size
 
     return render(request, "radiation.html", {"results": results})
 
