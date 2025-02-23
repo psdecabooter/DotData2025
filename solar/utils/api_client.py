@@ -1,22 +1,19 @@
 from rex import Resource
+import numpy as np
+from scipy.spatial import cKDTree
 
-nsrdb_file = '/nrel/nsrdb/conus/nsrdb_conus_2022.h5'
+nsrdb_file = '/nrel/nsrdb/current/nsrdb_2022.h5'
 
 
-def get_ghi(latitude, longitude):
+def get_ghi(lat, long):
     with Resource(nsrdb_file) as res:
-        latitudes = res.coordinates[:, 0]
-        longitudes = res.coordinates[:, 1]
+        target_coord = np.array([lat, long])
+        latitudes = np.array(res.coordinates[:, 0])
+        longitudes = np.array(res.coordinates[:, 1])
+        coords = np.column_stack((latitudes, longitudes))
+        tree = cKDTree(coords)
+        _, index = tree.query(target_coord)
 
-        lat_index = (abs(latitudes - latitude)).argmin()
-        lon_index = (abs(longitudes - longitude)).argmin()
+        ghi_value = np.mean(res['ghi', :, index])
 
-        ghi = res['ghi', lat_index, lon_index]
-
-    return ghi
-
-
-# print(get_ghi(40.7128, -74.0060))  # New York City
-print(get_ghi(34.0522, -118.2437))  # Los Angeles
-# print(get_ghi(41.8781, -87.6298))  # Chicago
-# print(get_ghi(37.7749, -122.4194))  # San Francisco
+    return ghi_value
