@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
     path('solar/', include('solar.urls')),
+    path('', include('core.urls')),
 ]
