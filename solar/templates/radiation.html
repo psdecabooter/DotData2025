@@ -91,33 +91,65 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Turf.js for point in polygon check -->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
     <script>
-        // Initialize Leaflet Map
-        var map = L.map('map').setView([37.7749, -122.4194], 5); // Default: San Francisco
+    // Initialize Leaflet Map (centered on the US)
+    var map = L.map('map').setView([37.7749, -122.4194], 5);
 
-        // Add OpenStreetMap Tile Layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+    // Add OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Add Marker
-        var marker = L.marker([37.7749, -122.4194], { draggable: true }).addTo(map);
+    // Set maximum bounds to the contiguous United States
+    var southWest = L.latLng(24.396308, -124.848974);
+    var northEast = L.latLng(49.384358, -66.885444);
+    var usBounds = L.latLngBounds(southWest, northEast);
+    map.setMaxBounds(usBounds);
+    map.on('drag', function () {
+      map.panInsideBounds(usBounds, { animate: false });
+    });
 
-        // Update input fields when marker is moved
-        marker.on('dragend', function (e) {
-            var latlng = marker.getLatLng();
-            document.getElementById('latitude').value = latlng.lat.toFixed(6);
-            document.getElementById('longitude').value = latlng.lng.toFixed(6);
+    // Add draggable Marker
+    var marker = L.marker([37.7749, -122.4194], { draggable: true }).addTo(map);
+    
+    // Update input fields when marker is moved
+    marker.on('dragend', function (e) {
+      var latlng = marker.getLatLng();
+      document.getElementById('latitude').value = latlng.lat.toFixed(6);
+      document.getElementById('longitude').value = latlng.lng.toFixed(6);
+    });
+
+    // Load US States GeoJSON for reverse lookup (external source)
+    var usStatesGeoJSON;
+    fetch("https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
+      .then(response => response.json())
+      .then(data => { usStatesGeoJSON = data; });
+
+    // Click on map to move marker and update inputs and state name
+    map.on('click', function (e) {
+      // Only allow clicks within US bounds
+      if (!usBounds.contains(e.latlng)) return;
+      
+      marker.setLatLng(e.latlng);
+      document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
+      document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
+
+      // Determine the US state of the clicked point
+      if (usStatesGeoJSON) {
+        var pt = turf.point([e.latlng.lng, e.latlng.lat]);
+        var stateName = "Unknown";
+        usStatesGeoJSON.features.forEach(function (feature) {
+          if (turf.booleanPointInPolygon(pt, feature)) {
+            stateName = feature.properties.name;
+          }
         });
-
-        // Click on map to move marker
-        map.on('click', function (e) {
-            marker.setLatLng(e.latlng);
-            document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
-            document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
-        });
-    </script>
+        console.log("Clicked state: " + stateName);
+        document.getElementById('stateName').innerText = stateName;
+      }
+    });
+  </script>
 </body>
 </html>
-
 // we used chatgpt for this file
