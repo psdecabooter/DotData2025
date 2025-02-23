@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'solar',
     'core',
+    'stats',
     'debug_toolbar',
     'comparison',
 ]
