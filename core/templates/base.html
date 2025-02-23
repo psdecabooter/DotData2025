@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>Solar Scope</title> <!-- Work in progress title -->
+    <title>LUMINOVA</title> <!-- Work in progress title -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'basestyle.css' %}">
@@ -17,12 +17,14 @@
 
 <body>
     <div class="ui wide container">
-        <div class="ui secondary menu">
-            <div class="header item">LUMINOVA</div>
+        <div class="ui secondary menu" style="margin-bottom: 0;">
+            <div class="header item">
+                <span class="ui huge header">LUMINOVA</span>
+            </div>
             <a class="item" href="{% url 'home' %}">Find Your Estimate</a>
-            <a class="item">Our Methodology</a>
+            <a class="item" href="{% url 'methodology' %}">Our Methodology</a>
         </div>
-        <div class="ui divider"></div>
+        <div class="ui divider" style="margin-top: 0"></div>
     </div>
     <div class="ui centered container">
         {% block content %}

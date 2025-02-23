@@ -17,6 +17,8 @@ def homeview(request):
         request.session['longitude'] = request.POST.get("longitude")
         request.session['stateName'] = request.POST.get("stateName")
         request.session['newLocation'] = True
+        if 'ghi' in request.session:
+            del request.session['ghi']
         if request.session['stateName'] != "Unknown":
             return redirect('estimate/')
 
@@ -60,7 +62,7 @@ def estimateview(request):
 
         # CREATING THE TABLE OF INFORMATION
         # Calculate estimated power output (Watts)
-        power_output = ghi_value * (float(request.session['efficiency']) / 100) * float(request.session['size'])
+        power_output = ghi_value * (float(request.session['efficiency']) / 100) * float(request.session['size']) * 24 *365/1000
 
         parameters['calculations'].append({
             'ghi': ghi_value,
@@ -99,3 +101,6 @@ def estimateview(request):
         }        
 
     return render(request, 'estimate.html', parameters)
+
+def methodologyview(request):
+    return render(request, 'methodology.html', {})
