@@ -1,13 +1,8 @@
 from django.shortcuts import render
+from solar.utils.api_client import get_ghi
 from rex import Resource
 
 nsrdb_file = '/nrel/nsrdb/conus/nsrdb_conus_2022.h5'
-
-
-def get_ghi(latitude, longitude):
-    ghi = 10
-
-    return ghi
 
 
 def ghi_view(request):
