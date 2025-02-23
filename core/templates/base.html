@@ -1,13 +1,35 @@
 <!DOCTYPE html>
 {% load static %}
 <html>
+
 <head>
     <title>Solar Scope</title> <!-- Work in progress title -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'basestyle.css' %}">
+    <!-- fomantic -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js"></script>
+    {% block headings %}
+    {% endblock %}
 </head>
 
 <body>
-    {% block content %}
+    <div class="ui wide container">
+        <div class="ui secondary menu">
+            <div class="header item">Solar Value</div>
+            <a class="item">Our Methodology</a>
+        </div>
+        <div class="ui divider"></div>
+    </div>
+    <div class="ui centered container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% block scripts %}
     {% endblock %}
 </body>
+
 </html>

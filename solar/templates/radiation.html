@@ -1,99 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar Power Estimator</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 70%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 18px;
-            text-align: left;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input {
-            padding: 8px;
-            margin-right: 10px;
-            width: 200px;
-        }
-        button {
-            padding: 8px 15px;
-            cursor: pointer;
-            background-color: #28a745;
-            color: white;
-            border: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar Power Estimator</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 70%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 18px;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin-right: 10px;
+      width: 200px;
+    }
+
+    button {
+      padding: 8px 15px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      border: none;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Solar Power Output Estimator</h1>
+  <h1>Solar Power Output Estimator</h1>
 
-    <!-- Leaflet Map -->
-    <div id="map"></div>
+  <!-- Leaflet Map -->
+  <div id="map"></div>
 
-    <!-- Form for user input -->
-    <form method="POST">
-        {% csrf_token %}
-        
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude" readonly required>
+  <!-- Form for user input -->
+  <form method="POST">
+    {% csrf_token %}
 
-        <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" name="longitude" readonly required>
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" name="latitude" readonly required>
 
-        <label for="efficiency">Panel Efficiency (%):</label>
-        <input type="number" step="any" name="efficiency" required>
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" name="longitude" readonly required>
 
-        <label for="size">Panel Size (m²):</label>
-        <input type="number" step="any" name="size" required>
+    <label for="efficiency">Panel Efficiency (%):</label>
+    <input type="number" step="any" name="efficiency" required>
 
-        <button type="submit">Calculate Power</button>
-    </form>
+    <label for="size">Panel Size (m²):</label>
+    <input type="number" step="any" name="size" required>
 
-    <!-- Table to Display Results -->
-    <table>
-        <tr>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>GHI (W/m²)</th>
-            <th>Efficiency (%)</th>
-            <th>Size (m²)</th>
-            <th>Estimated Power Output (W/h)</th>
-        </tr>
-        {% for entry in results %}
-        <tr>
-            <td>{{ entry.latitude }}</td>
-            <td>{{ entry.longitude }}</td>
-            <td>{{ entry.ghi }}</td>
-            <td>{{ entry.efficiency }}</td>
-            <td>{{ entry.size }}</td>
-            <td>{{ entry.power_output }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <button type="submit">Calculate Power</button>
+  </form>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- Turf.js for point in polygon check -->
-    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-    <script>
+  <!-- Table to Display Results -->
+  <table>
+    <tr>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>GHI (W/m²)</th>
+      <th>Efficiency (%)</th>
+      <th>Size (m²)</th>
+      <th>Estimated Power Output (W/h)</th>
+    </tr>
+    {% for entry in results %}
+    <tr>
+      <td>{{ entry.latitude }}</td>
+      <td>{{ entry.longitude }}</td>
+      <td>{{ entry.ghi }}</td>
+      <td>{{ entry.efficiency }}</td>
+      <td>{{ entry.size }}</td>
+      <td>{{ entry.power_output }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Turf.js for point in polygon check -->
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+  <script>
     // Initialize Leaflet Map (centered on the US)
     var map = L.map('map').setView([37.7749, -122.4194], 5);
 
@@ -113,7 +122,7 @@
 
     // Add draggable Marker
     var marker = L.marker([37.7749, -122.4194], { draggable: true }).addTo(map);
-    
+
     // Update input fields when marker is moved
     marker.on('dragend', function (e) {
       var latlng = marker.getLatLng();
@@ -131,7 +140,7 @@
     map.on('click', function (e) {
       // Only allow clicks within US bounds
       if (!usBounds.contains(e.latlng)) return;
-      
+
       marker.setLatLng(e.latlng);
       document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
       document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
@@ -151,5 +160,6 @@
     });
   </script>
 </body>
+
 </html>
 // we used chatgpt for this file
