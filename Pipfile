@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 django = "*"
 django-debug-toolbar = "*"
-nrel-rex = "*"
+nrel-rex = {extras = ["hsds"], version = ">=0.2.88"}
 
 [dev-packages]
 

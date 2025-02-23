@@ -2,6 +2,7 @@
 
 {% block headings %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
     #map {
         height: 200px;
@@ -14,32 +15,50 @@
 <div class="ui grid">
     <div class="row">
         <div class="twelve wide column">
-            <div class="row">
-                <div class="ui huge dividing header">Savings Calculator</div>
-            </div>
-            <div class="row">
-                <span class="ui medium text">Default values are set using national averages. For more information on
-                    what
-                    went into our algorithm, please read our methodology tab.</span>
-            </div>
-            <div class="ui hidden divider"></div>
-            <div class="row">
-                <div class="ui labeled input">
-                    <div class="ui label">
-                        Panel Efficiency (%)
-                    </div>
-                    <input type="number" min="0" max="100" placeholder="20">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="ui huge dividing header">Savings Calculator</div>
                 </div>
-            </div>
-            <div class="ui hidden divider"></div>
-            <div class="row">
-                <div class="ui labeled input">
-                    <div class="ui label">
-                        Panel Area (m²)
-                    </div>
-                    <input type="number" min="0" placeholder="158">
+                <div class="row">
+                    <span class="ui medium text">Default values are set using state averages. For more information on
+                        what went into our algorithm, please read our methodology tab. Our algorithm may take a moment
+                        to
+                        analyze your situation to the fullest extent.</span>
                 </div>
-            </div>
+                <div class="ui hidden divider"></div>
+                <div class="row">
+                    <div class="ui labeled input">
+                        <div class="ui label">
+                            Panel Efficiency (%)
+                        </div>
+                        <input name="efficiency" type="number" min="0" max="100" placeholder="20">
+                    </div>
+                </div>
+                <div class="ui hidden divider"></div>
+                <div class="row">
+                    <div class="ui grid">
+                        <div class="ui labeled input">
+                            <div class="ui label">
+                                Panel Area (m²)
+                            </div>
+                            <input name="size" type="number" min="0" placeholder="50">
+                        </div>
+                        <div class="ui labeled input">
+                            <div class="ui label">
+                                Price per m² of Panel ($)
+                            </div>
+                            <input name="pricePer" type="number" min="0" placeholder="{{pricePer}}">
+                        </div>
+                    </div>
+                    <div class="ui hidden divider"></div>
+                    <div class="row">
+                        <button type="submit" id="submit" class="ui button">
+                            Calculate Savings
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
         <div class="four wide left aligned column">
             <div class="row">
@@ -57,6 +76,33 @@
             </div>
         </div>
     </div>
+    {% if calculations|length > 0 %}
+    <div class="row">
+        <table class="ui celled table">
+            <thead>
+                <tr>
+                    <th>GHI (W/m²)</th>
+                    <th>Efficiency (%)</th>
+                    <th>Size (m²)</th>
+                    <th>Estimated Power Output (W/h)</th>
+                    <th>Initial Investment ($)</th>
+                </tr>
+            </thead>
+            {% for entry in calculations %}
+            <tr>
+                <td data-label="GHI (W/m²)">{{ entry.ghi }}</td>
+                <td data-label="Efficiency (%)">{{ entry.efficiency }}</td>
+                <td data-label="Size (m²)">{{ entry.size }}</td>
+                <td data-label="Estimated Power Output (W/h)">{{ entry.power_output }}</td>
+                <td data-label="Initial Investment ($)"="">{{ entry.initial_investment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="row">
+        <canvas id="costChart"></canvas>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -65,6 +111,12 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <!-- Turf.js for point in polygon check -->
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script>
+    var button = document.getElementById("submit");
+    button.onclick = () => {
+        button.classList.add('loading');
+    }
+</script>
 <script>
     // Initialize Leaflet Map (centered on the US)
     var map = L.map('map').setView([parseFloat('{{latitude}}'), parseFloat('{{longitude}}')], 5);

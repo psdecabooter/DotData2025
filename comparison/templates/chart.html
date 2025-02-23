@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity vs Solar Costs</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <h2>Electricity Cost vs Solar Panel Investment</h2>
 
@@ -25,14 +27,14 @@
     <script>
         const years = JSON.parse('{{ years|escapejs }}');
         const electricityCosts = JSON.parse('{{ electricity_costs|escapejs }}');
-        const reducedSolarCost = {{ reduced_solar_cost }};
+        const reducedSolarCost = parseFloat('{{ reduced_solar_cost }}');
         const maintenanceCosts = JSON.parse('{{ maintenance_costs|escapejs }}');
 
         // Calculate cumulative solar cost (upfront + maintenance)
         let cumulativeSolarCosts = [];
 
         for (let i = 0; i < years.length; i++) {
-            let cost = reducedSolarCost + maintenanceCosts*i;
+            let cost = reducedSolarCost + maintenanceCosts * i;
             cumulativeSolarCosts.push(cost);
         }
 
@@ -88,6 +90,7 @@
         });
     </script>
 </body>
+
 </html>
 
 //chatgpted
