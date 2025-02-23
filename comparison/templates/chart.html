@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity vs Solar Costs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Electricity Cost vs Solar Panel Investment</h2>
+
+    <form method="GET">
+        <label for="solar_cost">Upfront Solar Installation Cost ($):</label>
+        <input type="number" id="solar_cost" name="solar_cost" value="{{ original_solar_cost }}" step="0.01">
+        
+        <label for="panel_area">Solar Panel Area (sqft):</label>
+        <input type="number" id="panel_area" name="panel_area" value="{{ panel_area }}" step="1">
+        
+        <button type="submit">Update</button>
+    </form>
+
+    <h3>Initial Solar Cost: ${{ original_solar_cost }}</h3>
+    <h3>Solar Cost After 30% Tax Reduction: ${{ reduced_solar_cost }}</h3>
+
+    <canvas id="costChart"></canvas>
+
+    <script>
+        const years = JSON.parse('{{ years|escapejs }}');
+        const electricityCosts = JSON.parse('{{ electricity_costs|escapejs }}');
+        const reducedSolarCost = {{ reduced_solar_cost }};
+        const maintenanceCosts = JSON.parse('{{ maintenance_costs|escapejs }}');
+
+        // Calculate cumulative solar cost (upfront + maintenance)
+        let cumulativeSolarCosts = maintenanceCosts.map((cost, i) => reducedSolarCost + (cost * i));
+
+        // Properly accumulate electricity costs over the years
+        let cumulativeTradCosts = [];
+        let totalElectricityCost = 0;
+
+        electricityCosts.forEach((cost, i) => {
+            totalElectricityCost += cost;
+            cumulativeTradCosts.push(totalElectricityCost);
+        });
+
+        const ctx = document.getElementById('costChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'Electricity Cost (Cumulative)',
+                        data: cumulativeTradCosts,
+                        borderColor: 'red',
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: 'Solar Cost (Cumulative After Tax Reduction)',
+                        data: cumulativeSolarCosts,
+                        borderColor: 'green',
+                        borderWidth: 2,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Cost ($)'
+                        },
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
