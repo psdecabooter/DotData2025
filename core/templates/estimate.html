@@ -1,10 +1,86 @@
 {% extends "base.html" %}
 
 {% block headings %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+    #map {
+        height: 200px;
+        width: 100%;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="ui grid">
+    <div class="row">
+        <div class="twelve wide column">
+            <div class="row">
+                <div class="ui huge dividing header">Savings Calculator</div>
+            </div>
+            <div class="row">
+                <span class="ui medium text">Default values are set using national averages. For more information on
+                    what
+                    went into our algorithm, please read our methodology tab.</span>
+            </div>
+            <div class="ui hidden divider"></div>
+            <div class="row">
+                <div class="ui labeled input">
+                    <div class="ui label">
+                        Panel Efficiency (%)
+                    </div>
+                    <input type="number" min="0" max="100" placeholder="20">
+                </div>
+            </div>
+            <div class="ui hidden divider"></div>
+            <div class="row">
+                <div class="ui labeled input">
+                    <div class="ui label">
+                        Panel Area (m²)
+                    </div>
+                    <input type="number" min="0" placeholder="158">
+                </div>
+            </div>
+        </div>
+        <div class="four wide left aligned column">
+            <div class="row">
+                <div id="map"></div>
+            </div>
+            <div class="row">
+                <div class="ui segment">
+                    <span class="ui medium text">Latitude: {{latitude}}</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="ui segment">
+                    <span class="ui medium text">Longitude: {{longitude}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- Turf.js for point in polygon check -->
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script>
+    // Initialize Leaflet Map (centered on the US)
+    var map = L.map('map').setView([parseFloat('{{latitude}}'), parseFloat('{{longitude}}')], 5);
+
+    // Add OpenStreetMap Tile Layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Set maximum bounds to the contiguous United States
+    var southWest = L.latLng(24.396308, -124.848974);
+    var northEast = L.latLng(49.384358, -66.885444);
+    var usBounds = L.latLngBounds(southWest, northEast);
+    map.setMaxBounds(usBounds);
+
+    // Add draggable Marker
+    var marker = L.marker([parseFloat('{{latitude}}'), parseFloat('{{longitude}}')], { draggable: false }).addTo(map);
+</script>
 {% endblock %}

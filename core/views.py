@@ -23,4 +23,9 @@ def homeview(request):
     return render(request, 'home.html', parameters)
 
 def estimateview(request):
-    return render(request, 'estimate.html', {})
+    # default values
+    parameters = {'latitude':37.7749, 'longitude':-122.4194, 'stateName':'Unknown'}
+    if 'latitude' in request.session and 'longitude' in request.session and 'stateName' in request.session:
+        parameters = {'latitude':request.session['latitude'], 'longitude':request.session['longitude'], 'stateName':request.session['stateName']} 
+
+    return render(request, 'estimate.html', parameters)
