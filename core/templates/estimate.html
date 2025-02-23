@@ -8,6 +8,11 @@
         height: 200px;
         width: 100%;
     }
+
+    #costChart {
+        height: 100%;
+        width: 100%;
+    }
 </style>
 {% endblock %}
 
@@ -17,6 +22,8 @@
         <div class="twelve wide column">
             <form method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="latitude" id="latitude" value="{{latitude}}">
+                <input type="hidden" name="longitude" id="longitude" value="{{longitude}}">
                 <div class="row">
                     <div class="ui huge dividing header">Savings Calculator</div>
                 </div>
@@ -32,7 +39,8 @@
                         <div class="ui label">
                             Panel Efficiency (%)
                         </div>
-                        <input name="efficiency" type="number" min="0" max="100" placeholder="20">
+                        <input name="efficiency" type="number" min="0" max="100" placeholder="20"
+                            value="{{efficiency}}">
                     </div>
                 </div>
                 <div class="ui hidden divider"></div>
@@ -42,13 +50,14 @@
                             <div class="ui label">
                                 Panel Area (m²)
                             </div>
-                            <input name="size" type="number" min="0" placeholder="50">
+                            <input name="size" type="number" min="0" placeholder="50" value="{{size}}">
                         </div>
                         <div class="ui labeled input">
                             <div class="ui label">
                                 Price per m² of Panel ($)
                             </div>
-                            <input name="pricePer" type="number" min="0" placeholder="{{pricePer}}">
+                            <input name="pricePer" type="number" min="0" placeholder="{{statePrice}}"
+                                value="{{pricePer}}">
                         </div>
                     </div>
                     <div class="ui hidden divider"></div>
@@ -107,6 +116,72 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    const years = JSON.parse('{{ chart.years|escapejs }}');
+    const electricityCosts = JSON.parse('{{ chart.electricity_costs|escapejs }}');
+    const reducedSolarCost = parseFloat('{{ chart.reduced_solar_cost }}');
+    const initialSolarCost = parseFloat('{{ chart.original_solar_cost }}');
+    const maintenanceCosts = JSON.parse('{{ chart.maintenance_costs|escapejs }}');
+
+    // Calculate cumulative solar cost (upfront + maintenance)
+    let cumulativeSolarCosts = [];
+
+    for (let i = 0; i < years.length; i++) {
+        let cost = initialSolarCost + maintenanceCosts * i;
+        cumulativeSolarCosts.push(cost);
+    }
+
+    // Properly accumulate electricity costs over the years
+    let cumulativeTradCosts = [];
+    let totalElectricityCost = 0;
+
+    electricityCosts.forEach((cost, i) => {
+        totalElectricityCost += cost;
+        cumulativeTradCosts.push(totalElectricityCost);
+    });
+
+    const ctx = document.getElementById('costChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: years,
+            datasets: [
+                {
+                    label: 'Electricity Cost (Cumulative)',
+                    data: cumulativeTradCosts,
+                    borderColor: 'red',
+                    borderWidth: 3,
+                    fill: false
+                },
+                {
+                    label: 'Solar Cost (Cumulative After Initial Investment)',
+                    data: cumulativeSolarCosts,
+                    borderColor: 'green',
+                    borderWidth: 3,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Cost ($)'
+                    },
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+</script>
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <!-- Turf.js for point in polygon check -->
