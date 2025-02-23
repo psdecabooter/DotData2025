@@ -23,4 +23,5 @@ urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
     path('solar/', include('solar.urls')),
     path('', include('core.urls')),
+   path('comparison/', include('comparison.urls'))  ,
 ]
