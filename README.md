@@ -1,6 +1,10 @@
 # LUMINOVA 
 Luminova is a website that allows consumers to get an accurate understanding of how solar panels would effect their energy bill over time.
 <br>
+Luminova is built using Django full stack. If you would like to try the app yourself, you can run it using the normal local Django server and a local hsds server. 
+<br>
+More on HSDS here: [NREL REX guide](https://nrel.github.io/rex/misc/examples.hsds.html#hsds-and-rex-usage-examples)
+## Demonstration
 Although luminova is not currently hosted, you can view our demonstration video.
 <br>
 [![Watch the demonstration](https://img.youtube.com/vi/fofvF-GdZUQ/0.jpg)](https://www.youtube.com/watch?v=fofvF-GdZUQ)
