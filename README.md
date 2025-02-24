@@ -1,1 +1,153 @@
-# DotData2025
+# LUMINOVA 
+Luminova is a website that allows consumers to get an accurate understanding of how solar panels would effect their energy bill over time.
+<br>
+Although luminova is not currently hosted, you can view our demonstration video.
+<br>
+[![Watch the demonstration](https://img.youtube.com/vi/fofvF-GdZUQ/0.jpg)](https://www.youtube.com/watch?v=fofvF-GdZUQ)
+
+## Methodology
+<span class="ui medium text">The Luminova project employs a data-driven approach to empower users with actionable
+        insights into solar energy potential, costs, and savings. The methodology integrates advanced data analytics,
+        geospatial technologies (using OpenStreetMap API), and user-friendly interfaces to deliver accurate and
+        personalized results. Below is an overview of the key steps:</span>
+    <div class="ui list">
+        <div class="item">
+            <h3>1. Data Collection</h3>
+            <div class="ui bulleted list">
+                <div class="item">
+                    <span class="ui large text">Solar Irradiance Data:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">
+                            Global Horizontal Irradiance (GHI), Direct Normal Irradiance (DNI), and other meteorological
+                            variables are retrieved from trusted sources like the NREL Solar Radiation Database (NSRDB).
+                        </div>
+                        <div class="item">
+                            These datasets provide location-specific solar potential based on historical and real-time
+                            data.
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="ui large text">Geospatial Data:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">
+                            The OpenStreetMap API is used to allow users to interactively select their location on a
+                            map. Latitude and longitude coordinates are extracted from the user’s input for precise
+                            calculations.
+                        </div>
+                        <div class="item">
+                            OpenStreetMap is also used for reverse geocoding to retrieve state or regional information
+                            based on the user’s selected location.
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="ui large text">Cost Data:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">
+                            Average electricity prices by state are sourced from the U.S. Energy Information
+                            Administration (EIA).
+                        </div>
+                        <div class="item">
+                            Solar installation costs per square meter are estimated using industry averages and
+                            state-specific market data.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="item">
+            <h3>2. Data Processing</h3>
+            <div class="ui bulleted list">
+                <div class="item">
+                    <span class="ui large text">Solar Potential/Annual Energy Output</span>
+                    <div class="ui bulleted list">
+                        <div class="item">E=A×H×η×365</div>
+                        <div class="item">
+                            <span class="ui medium text">Where:</span>
+                            <div class="ui bulleted list">
+                                <div class="item">A: Panel area (m²)</div>
+                                <div class="item">H: Average daily GHI (kWh/m²/day)</div>
+                                <div class="item">η: Panel efficiency (typically 18–22%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="ui large text">Coordinate Mapping:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">The user’s selected coordinates are matched to the nearest grid point in the
+                            solar irradiance dataset using efficient spatial indexing techniques (e.g., KD-trees). This
+                            ensures accurate retrieval of irradiance values.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="ui large text">Financial Analysis:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">
+                            <span>Payback periods, lifetime savings, and environmental benefits are calculated based
+                                on:</span>
+                        </div>
+                        <div class="ui bulleted list">
+                            <div class="item">Installation costs.</div>
+                            <div class="item">Electricity prices.</div>
+                            <div class="item">Federal tax credits (30%) and other incentives.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="item">
+            <h3>3. User Interface Design</h3>
+            <div class="ui bulleted list">
+                <div class="item">
+                    <span class="ui large text">Interactive Map Integration with OpenStreetMap:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">Users interact with an embedded OpenStreetMap-based interface to select their
+                            location. The platform dynamically retrieves latitude and longitude coordinates based on
+                            user input.</div>
+                        <div class="item">Reverse geocoding via OpenStreetMap is used to determine the state or region
+                            for accessing localized cost data.</div>
+                    </div>
+                </div>
+                <div class="item">
+                    <span class="ui large text">Personalized Insights Dashboard:</span>
+                    <div class="ui bulleted list">
+                        <div class="item">
+                            <span class="ui medium text">Results include:</span>
+                        </div>
+                        <div class="ui bulleted list">
+                            <div class="item">Annual energy production.</div>
+                            <div class="item">Cost savings over time.</div>
+                            <div class="item">Payback period analysis.</div>
+                            <div class="item">Environmental impact (e.g., CO₂ emissions avoided).</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="item">
+            <h3> 4. Validation and Testing </h3>
+            <div class="ui bulleted list">
+                <div class="item">
+                    The methodology is validated by comparing calculated results with real-world data from existing
+                    solar installations in various locations.
+                </div>
+                <div class="item">
+                    Performance tests ensure accuracy, responsiveness, and scalability of the platform.
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <h3>Conclusion</h3>
+    </div>
+    <span class="ui medium text">The Luminova project combines geospatial technology (via OpenStreetMap), solar
+        energy analytics, and financial modeling to create a comprehensive platform that simplifies solar adoption
+        for households. By leveraging real-world data and user-friendly tools, Luminova empowers users to make
+        informed decisions about transitioning to clean energy.
+    </span>
